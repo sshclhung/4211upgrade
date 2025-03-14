@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Feedback Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        emailjs.init("JYKSTvr8xx8jZDFiA"); // Updated EmailJS Public Key
+    </script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
         .container { max-width: 400px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
@@ -28,14 +32,24 @@
 
     <script>
         const users = { "client1": "password123", "client2": "securepass" }; // Simple authentication
-        const adminEmail = "sshclhung@hotmail.com"; // Set your email address here
 
-        function sendEmail(subject, body) {
-            let mailtoLink = `mailto:${adminEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            let emailWindow = window.open(mailtoLink, '_blank');
-            if (emailWindow) {
-                emailWindow.close();
-            }
+        function sendEmail(username) {
+            const serviceID = "service_v6hp3f7";  // Updated EmailJS Service ID
+            const templateID = "{{username}} and {{timestamp}}";  // Updated EmailJS Template ID
+            const publicKey = "JYKSTvr8xx8jZDFiA";  // Updated EmailJS Public Key
+
+            const templateParams = {
+                username: username,
+                timestamp: new Date().toLocaleString()
+            };
+
+            emailjs.send(serviceID, templateID, templateParams, publicKey)
+                .then(response => {
+                    console.log("Email sent successfully", response);
+                })
+                .catch(error => {
+                    console.error("Error sending email", error);
+                });
         }
 
         function authenticate() {
@@ -45,7 +59,7 @@
             if (users[username] && users[username] === password) {
                 document.getElementById("login").style.display = "none";
                 document.getElementById("dashboard").style.display = "block";
-                sendEmail("Login Record", `User ${username} logged in at ${new Date().toLocaleString()}`);
+                sendEmail(username); // Call the function to send an email
             } else {
                 alert("Invalid login credentials!");
             }
